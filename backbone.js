@@ -461,9 +461,13 @@
       var model = this;
       var success = options.success;
       options.success = function(resp) {
-        if (options.update && !model.set(model.parse(resp, options), options)) return false;
-        if (success) success(model, resp, options);
-        if (options.update) model._sync(resp, options);
+        if (options.update) {
+          if (!model.set(model.parse(resp, options), options)) return false;
+          if (success) success(model, resp, options);
+          model._sync(resp, options);
+        } else {
+          if (success) success(model, resp, options);
+        }
       };
       wrapError(this, options);
       return this.sync('read', this, options);
