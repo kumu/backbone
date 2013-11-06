@@ -502,6 +502,16 @@
     ok(_.isEqual(this.syncArgs.model, doc));
   });
 
+  test("fetch without update", 2, function() {
+    var model = new Backbone.Model({name: 'One'});
+    model.sync = function(method, model, options) { options.success({name: 'Two'})};
+    model.fetch({
+      update: false,
+      success: function(model, response, options) { ok(_.isEqual(response, {name: 'Two'}), 'success'); }
+    });
+    equal(model.get('name'), 'One');
+  });
+
   test("destroy", 3, function() {
     doc.destroy();
     equal(this.syncArgs.method, 'delete');

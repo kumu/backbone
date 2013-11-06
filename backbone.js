@@ -453,16 +453,17 @@
 
     // Fetch the model from the server. If the server's representation of the
     // model differs from its current attributes, they will be overridden,
-    // triggering a `"change"` event.
+    // triggering a `"change"` event. If `update: false` is passed, this will
+    // fetch the model from the server but will not update the model's attributes.
+    // This is useful for previewing the server's version.
     fetch: function(options) {
-      options = options ? _.clone(options) : {};
-      if (options.parse === void 0) options.parse = true;
+      options = _.defaults({}, options, {parse: true, update: true});
       var model = this;
       var success = options.success;
       options.success = function(resp) {
-        if (!model.set(model.parse(resp, options), options)) return false;
+        if (options.update && !model.set(model.parse(resp, options), options)) return false;
         if (success) success(model, resp, options);
-        model._sync(resp, options);
+        if (options.update) model._sync(resp, options);
       };
       wrapError(this, options);
       return this.sync('read', this, options);
