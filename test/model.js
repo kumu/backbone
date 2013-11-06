@@ -539,6 +539,33 @@
     equal(model.get('a'), 100);
   });
 
+  test("syncedAttributes", 6, function() {
+    var model = new Backbone.Model({name: 'One'});
+    model.sync = function(method, model, options) {
+      var response;
+      if (method == 'create')
+        response = {id: 1, created_at: 'create', updated_at: 'create'};
+      else if (method == 'read')
+        response = model.toJSON();
+      else if (method == 'update')
+        response = {updated_at: 'update'};
+      else if (method == 'delete')
+        response = {}; // {updated_at: 'destroy'} -- backbone doesn't parse destroy response
+      options.success(response);
+    };
+    equal(model.syncedAttributes(), null);
+    model.save();
+    ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'One', created_at: 'create', updated_at: 'create'}), 'syncedAttributes on create');
+    model.fetch();
+    ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'One', created_at: 'create', updated_at: 'create'}), 'syncedAttributes on read');
+    model.set('name', 'Two');
+    ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'One', created_at: 'create', updated_at: 'create'}), 'syncedAttributes on change');
+    model.save();
+    ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'Two', created_at: 'create', updated_at: 'update'}), 'syncedAttributes on update');
+    model.destroy();
+    ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'Two', created_at: 'create', updated_at: 'update'}), 'syncedAttributes on destroy');
+  });
+
   test("validate on unset and clear", 6, function() {
     var error;
     var model = new Backbone.Model({name: "One"});
