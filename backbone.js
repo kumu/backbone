@@ -900,20 +900,27 @@
     // Fetch the default set of models for this collection, resetting the
     // collection when they arrive. If `reset: true` is passed, the response
     // data will be passed through the `reset` method instead of `set`.
+    //  If `update: false` is passed, this will fetch the models from the server
+    // but will not update the collection. This is useful for previewing the
+    // server's copy of the collection.
     fetch: function(options) {
-      options = options ? _.clone(options) : {};
-      if (options.parse === void 0) options.parse = true;
+      options = _.defaults({}, options, {parse: true, update: true});
       var success = options.success;
       var collection = this;
       options.success = function(resp) {
-        var method = options.reset ? 'reset' : 'set';
-        collection[method](resp, options);
-        if (success) success(collection, resp, options);
-        collection.trigger('sync', collection, resp, options);
+        if (options.update) {
+          var method = options.reset ? 'reset' : 'set';
+          collection[method](resp, options);
+          if (success) success(collection, resp, options);
+          collection.trigger('sync', collection, resp, options);
+        } else {
+          if (success) success(collection, resp, options);
+        }
       };
       wrapError(this, options);
       return this.sync('read', this, options);
     },
+
 
     // Create a new instance of a model in this collection. Add the model to the
     // collection immediately, unless `wait: true` is passed, in which case we
