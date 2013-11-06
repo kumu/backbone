@@ -598,7 +598,7 @@
 
     // Save copy of attributes and fire `"sync"` event.
     _sync: function(resp, options) {
-      this._syncedAttributes = this.toJSON();
+      this._syncedAttributes = _.clone(this.attributes);
       this.trigger('sync', this, resp, options);
     },
 
