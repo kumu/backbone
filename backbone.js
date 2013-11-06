@@ -421,6 +421,32 @@
       return _.clone(this._previousAttributes);
     },
 
+    // Determine if the model has changed since the last `"sync"` event.
+    // Returns false for new models. If you specify an attribute name,
+    // determine if that attribute has changed.
+    isSynced: function(attr) {
+      if (!this._syncedAttributes) return false;
+      if (attr == null) return _.isEqual(this._syncedAttributes, this.attributes);
+      return _.isEqual(this._syncedAttributes[attr], this.attributes[attr]);
+    },
+
+    // // Return an object containing all the attributes that have changed, or
+    // // false if there are no changed attributes. Useful for determining what
+    // // parts of a view need to be updated and/or what attributes need to be
+    // // persisted to the server. Unset attributes will be set to undefined.
+    // // You can also pass an attributes object to diff against the model,
+    // // determining if there *would be* a change.
+    // changedAttributes: function(diff) {
+    //   if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
+    //   var val, changed = false;
+    //   var old = this._changing ? this._previousAttributes : this.attributes;
+    //   for (var attr in diff) {
+    //     if (_.isEqual(old[attr], (val = diff[attr]))) continue;
+    //     (changed || (changed = {}))[attr] = val;
+    //   }
+    //   return changed;
+    // },
+
     // Get the previous value of an attribute, recorded at the time the last
     // `"sync"` event was fired.
     synced: function(attr) {

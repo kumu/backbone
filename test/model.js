@@ -576,6 +576,16 @@
     ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'Two', created_at: 'create', updated_at: 'update'}), 'syncedAttributes on destroy');
   });
 
+  test("isSynced", 4, function() {
+    var model = new Backbone.Model({name: 'One'});
+    model.sync = function(method, model, options) { options.success(); };
+    ok(!model.isSynced(), 'new model');
+    ok(!model.isSynced('name'), 'new model attribute');
+    model.save();
+    ok(model.isSynced(), 'synced');
+    ok(model.isSynced('name'), 'synced attribute');
+  });
+
   test("validate on unset and clear", 6, function() {
     var error;
     var model = new Backbone.Model({name: "One"});
