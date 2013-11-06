@@ -421,6 +421,12 @@
       return _.clone(this._previousAttributes);
     },
 
+    // Get all of the attributes of the model at the time of the previous
+    // `"sync"` event.
+    syncedAttributes: function() {
+      return _.clone(this._syncedAttributes);
+    },
+
     // Fetch the model from the server. If the server's representation of the
     // model differs from its current attributes, they will be overridden,
     // triggering a `"change"` event.
@@ -432,7 +438,7 @@
       options.success = function(resp) {
         if (!model.set(model.parse(resp, options), options)) return false;
         if (success) success(model, resp, options);
-        model.trigger('sync', model, resp, options);
+        model._sync(resp, options);
       };
       wrapError(this, options);
       return this.sync('read', this, options);
@@ -482,7 +488,7 @@
           return false;
         }
         if (success) success(model, resp, options);
-        model.trigger('sync', model, resp, options);
+        model._sync(resp, options);
       };
       wrapError(this, options);
 
@@ -511,7 +517,7 @@
       options.success = function(resp) {
         if (options.wait || model.isNew()) destroy();
         if (success) success(model, resp, options);
-        if (!model.isNew()) model.trigger('sync', model, resp, options);
+        if (!model.isNew()) model._sync(resp, options);
       };
 
       if (this.isNew()) {
@@ -564,8 +570,13 @@
       if (!error) return true;
       this.trigger('invalid', this, error, _.extend(options, {validationError: error}));
       return false;
-    }
+    },
 
+    // Save copy of attributes and fire `"sync"` event.
+    _sync: function(resp, options) {
+      this._syncedAttributes = this.toJSON();
+      this.trigger('sync', this, resp, options);
+    }
   });
 
   // Underscore methods that we want to implement on the Model.
