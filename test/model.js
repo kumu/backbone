@@ -576,6 +576,17 @@
     ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'Two', created_at: 'create', updated_at: 'update'}), 'syncedAttributes on destroy');
   });
 
+  test("unsyncedAttributes", 4, function() {
+    var model = new Backbone.Model({name: 'One'});
+    model.sync = function(method, model, options) { options.success(); };
+    ok(_.isEqual(model.unsyncedAttributes(), {name: 'One'}), 'unsynced');
+    model.save();
+    equal(model.unsyncedAttributes(), false, 'synced');
+    model.set('title', 'Mr');
+    ok(_.isEqual(model.unsyncedAttributes(), {title: 'Mr'}), 'updated');
+    ok(_.isEqual(model.unsyncedAttributes({name: 'Two'}), {name: 'Two', title: 'Mr'}), 'diff');
+  });
+
   test("isSynced", 4, function() {
     var model = new Backbone.Model({name: 'One'});
     model.sync = function(method, model, options) { options.success(); };
