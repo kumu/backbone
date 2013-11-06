@@ -455,6 +455,16 @@
     equal(this.syncArgs.options.parse, false);
   });
 
+  test("fetch without update", 2, function() {
+    var collection = new Backbone.Collection;
+    collection.sync = function(method, collection, options) { options.success([{name: 'One'}]); }
+    collection.fetch({
+      update: false,
+      success: function (collection, response, options) { ok(_.isEqual(response, [{name: 'One'}]), 'success') }
+    });
+    equal(collection.length, 0);
+  });
+
   test("fetch with an error response triggers an error event", 1, function () {
     var collection = new Backbone.Collection();
     collection.on('error', function () {
