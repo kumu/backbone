@@ -407,13 +407,8 @@
     // determining if there *would be* a change.
     changedAttributes: function(diff) {
       if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
-      var val, changed = false;
       var old = this._changing ? this._previousAttributes : this.attributes;
-      for (var attr in diff) {
-        if (_.isEqual(old[attr], (val = diff[attr]))) continue;
-        (changed || (changed = {}))[attr] = val;
-      }
-      return changed;
+      return this._diff(old, diff);
     },
 
     // Get the previous value of an attribute, recorded at the time the last
@@ -438,22 +433,18 @@
       return _.isEqual(this._syncedAttributes[attr], this.attributes[attr]);
     },
 
-    // // Return an object containing all the attributes that have changed, or
-    // // false if there are no changed attributes. Useful for determining what
-    // // parts of a view need to be updated and/or what attributes need to be
-    // // persisted to the server. Unset attributes will be set to undefined.
-    // // You can also pass an attributes object to diff against the model,
-    // // determining if there *would be* a change.
-    // changedAttributes: function(diff) {
-    //   if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
-    //   var val, changed = false;
-    //   var old = this._changing ? this._previousAttributes : this.attributes;
-    //   for (var attr in diff) {
-    //     if (_.isEqual(old[attr], (val = diff[attr]))) continue;
-    //     (changed || (changed = {}))[attr] = val;
-    //   }
-    //   return changed;
-    // },
+    // Return an object containing all the attributes that have changed, or
+    // false if there are no changed attributes. Useful for determining what
+    // parts of a view need to be updated and/or what attributes need to be
+    // persisted to the server. Unset attributes will be set to undefined.
+    // You can also pass an attributes object to diff against the model,
+    // determining if there *would be* a change.
+    unsyncedAttributes: function(diff) {
+      if (!diff && this.isSynced()) return false;
+      diff = _.extend({}, this.attributes, diff);
+      if (!this._syncedAttributes) return diff;
+      return this._diff(this._syncedAttributes, diff);
+    },
 
     // Get the previous value of an attribute, recorded at the time the last
     // `"sync"` event was fired.
@@ -617,6 +608,18 @@
     _sync: function(resp, options) {
       this._syncedAttributes = this.toJSON();
       this.trigger('sync', this, resp, options);
+    },
+
+    // Return an object containing all the attributes that have changed, or
+    // false if there are no changed attributes. Unset attributes will be set
+    // to undefined. This method is used by changedAttributes and unsyncedAttributes.
+    _diff: function(old, diff) {
+      var val, changed = false;
+      for (var attr in diff) {
+        if (_.isEqual(old[attr], (val = diff[attr]))) continue;
+        (changed || (changed = {}))[attr] = val;
+      }
+      return changed;
     }
   });
 
