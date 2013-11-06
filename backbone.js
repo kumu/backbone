@@ -421,6 +421,13 @@
       return _.clone(this._previousAttributes);
     },
 
+    // Get the previous value of an attribute, recorded at the time the last
+    // `"sync"` event was fired.
+    synced: function(attr) {
+      if (attr == null || !this._syncedAttributes) return null;
+      return this._syncedAttributes[attr];
+    },
+
     // Get all of the attributes of the model at the time of the previous
     // `"sync"` event.
     syncedAttributes: function() {

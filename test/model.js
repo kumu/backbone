@@ -539,6 +539,16 @@
     equal(model.get('a'), 100);
   });
 
+  test("synced", 3, function() {
+    var model = new Backbone.Model({name: 'One'});
+    model.sync = function(method, model, options) { options.success({}) };
+    equal(model.synced('name'), null);
+    model.save();
+    equal(model.synced('name'), 'One');
+    model.set('name', 'Two');
+    equal(model.synced('name'), 'One');
+  });
+
   test("syncedAttributes", 6, function() {
     var model = new Backbone.Model({name: 'One'});
     model.sync = function(method, model, options) {
