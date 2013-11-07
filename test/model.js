@@ -66,6 +66,13 @@
     equal(model.get('last_name'), 'Unknown');
   });
 
+  test("initialize syncedAttributes", 2, function() {
+    var model = new Backbone.Model({})
+    equal(model.syncedAttributes(), null, 'new model');
+    model = new Backbone.Model({id: 1, name: 'One'});
+    ok(_.isEqual(model.syncedAttributes(), {id: 1, name: 'One'}), 'existing model');
+  });
+
   test("parse can return null", 1, function() {
     var Model = Backbone.Model.extend({
       parse: function(attrs) {
