@@ -614,6 +614,18 @@
     ok(model.isSynced('name'), 'synced attribute');
   });
 
+  test("resync", 1, function() {
+    var model = new Backbone.Model({name: 'One'});
+    model.resync();
+    equal(model.synced('name'), 'One');
+  });
+
+  test("resync explicit", 1, function() {
+    var model = new Backbone.Model({name: 'One'});
+    model.resync({name: 'Two'});
+    equal(model.synced('name'), 'Two');
+  });
+
   test("validate on unset and clear", 6, function() {
     var error;
     var model = new Backbone.Model({name: "One"});

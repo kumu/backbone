@@ -452,6 +452,12 @@
       return _.clone(this._syncedAttributes);
     },
 
+    // Updates syncedAttributes to the model's current attributes.
+    // You can pass an attributes object to override the attributes used.
+    resync: function(attributes) {
+      this._syncedAttributes = attributes ? _.clone(attributes) : this.toJSON();
+    },
+
     // Fetch the model from the server. If the server's representation of the
     // model differs from its current attributes, they will be overridden,
     // triggering a `"change"` event. If `update: false` is passed, this will
@@ -602,9 +608,9 @@
       return false;
     },
 
-    // Save copy of attributes and fire `"sync"` event.
+    // Resync attributes and fire `"sync"` event.
     _sync: function(resp, options) {
-      this._syncedAttributes = this.toJSON();
+      this.resync();
       this.trigger('sync', this, resp, options);
     },
 
