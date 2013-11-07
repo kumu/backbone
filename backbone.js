@@ -261,7 +261,7 @@
     attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
     this.set(attrs, options);
     this.changed = {};
-    this._syncedAttributes = this.isNew() ? null : _.clone(this.attributes);
+    this._syncedAttributes = this.isNew() ? null : this.toJSON();
     this.initialize.apply(this, arguments);
   };
 
@@ -612,7 +612,7 @@
 
     // Save copy of attributes and fire `"sync"` event.
     _sync: function(resp, options) {
-      this._syncedAttributes = _.clone(this.attributes);
+      this._syncedAttributes = this.toJSON();
       this.trigger('sync', this, resp, options);
     },
 
