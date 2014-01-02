@@ -1346,4 +1346,9 @@
     deepEqual(collection.ids(), [1, 2]);
   });
 
+  test('cids', 1, function() {
+    var collection = new Backbone.Collection();
+    collection.reset([{id: 1}, {id: 2}]);
+    deepEqual(collection.cids(), [collection.at(0).cid, collection.at(1).cid]);
+  });
 })();
