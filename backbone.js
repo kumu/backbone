@@ -917,6 +917,11 @@
       return _.invoke(this.models, 'get', attr);
     },
 
+    // Get id for each model in the collection.
+    ids: function(attr) {
+      return this.map(function(model){ return model.id });
+    },
+
     // Fetch the default set of models for this collection, resetting the
     // collection when they arrive. If `reset: true` is passed, the response
     // data will be passed through the `reset` method instead of `set`.

@@ -1340,4 +1340,10 @@
     ok(collection.getAll([1, 2, 3]).length === 2);
   });
 
+  test('ids', 1, function() {
+    var collection = new Backbone.Collection();
+    collection.reset([{id: 1}, {id: 2}]);
+    deepEqual(collection.ids(), [1, 2]);
+  });
+
 })();
