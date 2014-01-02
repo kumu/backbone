@@ -862,6 +862,15 @@
       return this._byId[obj] || this._byId[obj.id] || this._byId[obj.cid];
     },
 
+    // Get models from the set by id array. Only found models are returned.
+    getAll: function(array) {
+      var model, models = [];
+      for (var i = 0, l = array.length; i < l; i++) {
+        if ((model = this.get(array[i])) != null) models.push(model);
+      }
+      return models;
+    },
+
     // Get the model at the given index.
     at: function(index) {
       return this.models[index];

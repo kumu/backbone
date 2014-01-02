@@ -1334,4 +1334,10 @@
   });
 
 
+  test('getAll', 1, function() {
+    var collection = new Backbone.Collection();
+    collection.reset([{id: 1}, {id: 2}]);
+    ok(collection.getAll([1, 2, 3]).length === 2);
+  });
+
 })();
