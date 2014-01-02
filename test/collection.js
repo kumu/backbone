@@ -1333,6 +1333,52 @@
 
   });
 
+  test('_addReference adds custom keys', 2, function() {
+    var Collection = Backbone.Collection.extend({
+      index: function(model) { return [model.get('key')]; }
+    });
+
+    var collection = new Collection();
+    var model = collection.add({key: 'one'});
+    ok(collection._byId['one'] === model);
+    ok(collection._keys[model.cid].join() === 'one')
+  });
+
+  test('_removeReference removes custom keys', 2, function() {
+    var Collection = Backbone.Collection.extend({
+      index: function(model) { return [model.get('key')]; }
+    });
+
+    var collection = new Collection();
+    var model = collection.add({key: 'one'});
+    collection.remove(model);
+    ok(collection._byId['one'] === undefined);
+    ok(collection._keys[model.cid] === undefined);
+  });
+
+  test('index updated on model updates', 4, function() {
+    var Collection = Backbone.Collection.extend({
+      index: function(model) { return [model.get('key')]; }
+    });
+
+    var collection = new Collection();
+    var model = collection.add({id: 1, key: 'one'});
+    model.set({id: 2, key: 'two'});
+    ok(collection._byId[1] === undefined);
+    ok(collection._byId[2] === model);
+    ok(collection._byId['one'] === undefined);
+    ok(collection._byId['two'] === model);
+  });
+
+  test('get finds models by custom index', 1, function() {
+    var Collection = Backbone.Collection.extend({
+      index: function(model) { return [model.get('key')]; }
+    });
+
+    var collection = new Collection();
+    var model = collection.add({key: 'one'});
+    ok(collection.get('one') === model);
+  });
 
   test('getAll', 1, function() {
     var collection = new Backbone.Collection();

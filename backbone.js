@@ -986,6 +986,7 @@
       this.length = 0;
       this.models = [];
       this._byId  = {};
+      this._keys  = {};
     },
 
     // Prepare a hash of attributes (or other model) to be added to this
@@ -1002,18 +1003,42 @@
 
     // Internal method to create a model's ties to a collection.
     _addReference: function(model, options) {
-      this._byId[model.cid] = model;
-      if (model.id != null) this._byId[model.id] = model;
+      this._addKeys(model);
       if (!model.collection) model.collection = this;
       model.on('all', this._onModelEvent, this);
     },
 
+    _addKeys: function(model) {
+      this._keys[model.cid] = [];
+      this._byId[model.cid] = model; // cid will never change, skip _addKey
+      if (model.id != null) this._addKey(model, model.id);
+      if (this.index != null) {
+        var key, keys = this.index(model);
+        for (var i = 0, l = keys.length; i < l; i++) {
+          if ((key = keys[i]) != null) this._addKey(model, key);
+        }
+      }
+    },
+
+    _addKey: function(model, key) {
+      this._byId[key] = model;
+      this._keys[model.cid].push(key);
+    },
+
     // Internal method to sever a model's ties to a collection.
     _removeReference: function(model, options) {
-      delete this._byId[model.id];
-      delete this._byId[model.cid];
+      this._removeKeys(model);
       if (this === model.collection) delete model.collection;
       model.off('all', this._onModelEvent, this);
+    },
+
+    _removeKeys: function(model) {
+      delete this._byId[model.cid];
+      var keys = this._keys[model.cid];
+      for (var i = 0, l = keys.length; i < l; i++) {
+        delete this._byId[keys[i]];
+      }
+      delete this._keys[model.cid]; // TODO: .length = 0 to be gc friendly?
     },
 
     // Internal method called every time a model in the set fires an event.
@@ -1023,9 +1048,9 @@
     _onModelEvent: function(event, model, collection, options) {
       if ((event === 'add' || event === 'remove') && collection !== this) return;
       if (event === 'destroy') this.remove(model, options);
-      if (model && event === 'change:' + model.idAttribute) {
-        delete this._byId[model.previous(model.idAttribute)];
-        if (model.id != null) this._byId[model.id] = model;
+      if (model && event === 'change') {
+        this._removeKeys(model);
+        this._addKeys(model);
       }
       this.trigger.apply(this, arguments);
     }
