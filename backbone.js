@@ -694,8 +694,10 @@
       return Backbone.sync.apply(this, arguments);
     },
 
-    // Add a model, or list of models to the set.
+    // Add a model, or list of models to the set. If called without arguments
+    // a new model will be created with default attributes.
     add: function(models, options) {
+      models = models || {};
       return this.set(models, _.extend({merge: false}, options, addOptions));
     },
 
@@ -823,7 +825,7 @@
       }
       options.previousModels = this.models;
       this._reset();
-      models = this.add(models, _.extend({silent: true}, options));
+      if (models != null) models = this.add(models, _.extend({silent: true}, options));
       if (!options.silent) this.trigger('reset', this, options);
       return models;
     },

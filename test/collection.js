@@ -270,6 +270,13 @@
     equal(col.indexOf(tom), 2);
   });
 
+  test("add without args should build empty model", 2, function() {
+    var col = new Backbone.Collection;
+    var model = col.add();
+    equal(col.length, 1);
+    equal(col.indexOf(model), 0);
+  });
+
   test("comparator that depends on `this`", 2, function() {
     var col = new Backbone.Collection;
     col.negative = function(num) {
