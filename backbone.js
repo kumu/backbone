@@ -1018,7 +1018,8 @@
       if (this.index != null) {
         var key, keys = this.index(model);
         for (var i = 0, l = keys.length; i < l; i++) {
-          if ((key = keys[i]) != null) this._addKey(model, key);
+          key = keys[i];
+          if (key != null && key != '') this._addKey(model, key);
         }
       }
     },

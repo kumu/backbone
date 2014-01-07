@@ -1351,6 +1351,17 @@
     ok(collection._keys[model.cid].join() === 'one')
   });
 
+  test('_addReference ignores blank keys', 2, function() {
+    var Collection = Backbone.Collection.extend({
+      index: function(model) { return [model.get('key')]; }
+    });
+
+    var collection = new Collection();
+    var model = collection.add({key: ''});
+    ok(collection._byId[''] === undefined);
+    ok(collection._keys[model.cid].join() === '');
+  });
+
   test('_removeReference removes custom keys', 2, function() {
     var Collection = Backbone.Collection.extend({
       index: function(model) { return [model.get('key')]; }
