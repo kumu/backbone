@@ -257,7 +257,7 @@
     attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
     this.set(attrs, options);
     this.changed = {};
-    this._syncedAttributes = this.isNew() ? null : this.toJSON();
+    this._syncedAttributes = this.isNew() ? null : _.clone(attrs);
     this.initialize.apply(this, arguments);
   };
 
