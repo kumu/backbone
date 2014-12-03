@@ -860,9 +860,14 @@
     },
 
     // Get a model from the set by id.
+    //
+    // KUMU: Since we override model.toString and include non-unique key indexes
+    // we had to tweak the behavior of get.
+    //
+    // See https://github.com/kumu/kumu/issues/2147
     get: function(obj) {
       if (obj == null) return void 0;
-      return this._byId[obj] || this._byId[obj.id] || this._byId[obj.cid];
+      return (!(obj instanceof Model) && this._byId[obj]) || this._byId[obj.id] || this._byId[obj.cid];
     },
 
     // Get models from the set by id array. Only found models are returned.

@@ -90,6 +90,17 @@
     equal(collection.get(1).id, 1);
   }),
 
+  test('get with model', 2, function() {
+    var Model = Backbone.Model.extend({
+      toString: function() { return this.get("name"); }
+    });
+    var collection = new Backbone.Collection();
+    var model1 = collection.add(new Model({name: "one"}));
+    var model2 = collection.add(new Model({name: "two"}));
+    equal(collection.get(model1), model1);
+    equal(collection.get(model2), model2);
+  }),
+
   test("update index when id changes", 4, function() {
     var col = new Backbone.Collection();
     col.add([
